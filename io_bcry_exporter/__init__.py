@@ -36,8 +36,8 @@ bl_info = {
     "author": "Özkan Afacan, Angelo J. Miner, Mikołaj Milej, Daniel White,\
               Oscar Martin Garcia, Duo Oratar, David Marcelis,\
              Leonid Bilousov",
-    "blender": (2, 80, 0),
-    "version": (5, 5, 2),
+    "blender": (2, 83, 10),
+    "version": (5, 6, 7),
     "location": "BCRY Exporter Menu",
     "description": "Export assets from Blender to CryEngine V",
     "warning": "",
@@ -740,7 +740,7 @@ class BCRY_OT_add_proxy(bpy.types.Operator):
         else:
             bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
-        name = "proxy"
+        name = "99__proxy__physProxyNoDraw"
         if name in bpy.data.materials:
             proxy_material = bpy.data.materials[name]
         else:
