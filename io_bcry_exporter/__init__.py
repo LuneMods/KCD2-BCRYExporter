@@ -33,10 +33,8 @@
 
 bl_info = {
     "name": "BCRY Exporter",
-    "author": "Özkan Afacan, Angelo J. Miner, Mikołaj Milej, Daniel White,\
-              Oscar Martin Garcia, Duo Oratar, David Marcelis,\
-             Leonid Bilousov",
-    "blender": (2, 83, 10),
+    "author": "Özkan Afacan, Angelo J. Miner, Mikołaj Milej, Daniel White, Oscar Martin Garcia, Duo Oratar, David Marcelis, Leonid Bilousov, Zhen Wang",
+    "blender": (2, 93, 2),
     "version": (5, 6, 7),
     "location": "BCRY Exporter Menu",
     "description": "Export assets from Blender to CryEngine V",

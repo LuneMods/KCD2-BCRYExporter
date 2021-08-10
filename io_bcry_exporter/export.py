@@ -32,7 +32,6 @@ import time
 import xml.dom.minidom
 from collections import OrderedDict
 from datetime import datetime
-from time import clock
 from xml.dom.minidom import Document, Element, parse, parseString
 
 import bmesh
@@ -197,30 +196,30 @@ class CrytekDaeExporter:
                 print()
                 bcPrint('"{}" object is being processed...'.format(object_.name))
 
-                start_time = clock()
+                start_time = process_time()
                 self._write_positions(bmesh_, mesh_node, geometry_name)
-                bcPrint('Positions have been writed {:.4f} seconds.'.format(clock() - start_time))
+                bcPrint('Positions have been writed {:.4f} seconds.'.format(process_time() - start_time))
 
-                start_time = clock()
+                start_time = process_time()
                 self._write_normals(object_, bmesh_, mesh_node, geometry_name)
-                bcPrint('Normals have been writed {:.4f} seconds.'.format(clock() - start_time))
+                bcPrint('Normals have been writed {:.4f} seconds.'.format(process_time() - start_time))
 
-                start_time = clock()
+                start_time = process_time()
                 self._write_uvs(object_, bmesh_, mesh_node, geometry_name)
-                bcPrint('UVs have been writed {:.4f} seconds.'.format(clock() - start_time))
+                bcPrint('UVs have been writed {:.4f} seconds.'.format(process_time() - start_time))
 
-                start_time = clock()
+                start_time = process_time()
                 self._write_vertex_colors(object_, bmesh_, mesh_node, geometry_name)
-                bcPrint('Vertex colors have been writed {:.4f} seconds.'.format(clock() - start_time))
+                bcPrint('Vertex colors have been writed {:.4f} seconds.'.format(process_time() - start_time))
 
-                start_time = clock()
+                start_time = process_time()
                 self._write_vertices(mesh_node, geometry_name)
-                bcPrint('Vertices have been writed {:.4f} seconds.'.format(clock() - start_time))
+                bcPrint('Vertices have been writed {:.4f} seconds.'.format(process_time() - start_time))
 
-                start_time = clock()
+                start_time = process_time()
                 self._write_triangle_list(
                     object_, bmesh_, mesh_node, geometry_name)
-                bcPrint('Triangle list have been writed {:.4f} seconds.'.format(clock() - start_time))
+                bcPrint('Triangle list have been writed {:.4f} seconds.'.format(process_time() - start_time))
 
                 extra = self._create_double_sided_extra("MAYA")
                 mesh_node.appendChild(extra)
