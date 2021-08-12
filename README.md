@@ -1,5 +1,5 @@
 # BCRYExporter
-This is ported version of BCRYExporter for Cryengine 5 from https://github.com/AFCStudio/BCRYExporter for Blender 2.93+
+This is ported version of BCRYExporter for Cryengine 5 from https://github.com/AFCStudio/BCRYExporter for Blender 2.93+ <br>
 This version is based on https://github.com/LeonidasWhite/BCRYExporter
  
 <b>Installation:</b>

@@ -29,6 +29,7 @@ import os
 import subprocess
 import threading
 import time
+from time import process_time
 import xml.dom.minidom
 from collections import OrderedDict
 from datetime import datetime
