@@ -33,7 +33,7 @@
 
 bl_info = {
     "name": "BCRY Exporter",
-    "author": "Özkan Afacan, Angelo J. Miner, Mikołaj Milej, Daniel White, Oscar Martin Garcia, Duo Oratar, David Marcelis, Leonid Bilousov, Zhen Wang",
+    "author": "Özkan Afacan; Angelo J. Miner; Mikołaj Milej; Daniel White; Oscar Martin Garcia; Duo Oratar; David Marcelis; Leonid Bilousov; Wang, Zhen",
     "blender": (2, 93, 2),
     "version": (5, 6, 7),
     "location": "BCRY Exporter Menu",
