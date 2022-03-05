@@ -66,6 +66,7 @@ else:
 import math
 import os
 import os.path
+from unicodedata import name
 # import pickle
 # import subprocess
 # import webbrowser
@@ -1156,9 +1157,9 @@ class BCRY_OT_add_material_properties(bpy.types.Operator):
     bl_label = "Add BCRY Exporter material properties to materials"
     bl_idname = "bcry.add_material_properties"
 
-    material_name: StringProperty(
-        name="Material Name",
-        description="Main material name which shown at CryEngine")
+    # material_name: StringProperty(
+    #     name="Material Name",
+    #     description="Main material name which shown at CryEngine")
     material_phys: EnumProperty(
         name="Physical Proxy",
         items=(
@@ -1179,10 +1180,12 @@ class BCRY_OT_add_material_properties(bpy.types.Operator):
             + " it yet, please create it with 'Add ExportNode' tool."
 
         self.object_ = bpy.context.active_object
-
-        if self.object_ is None or self.object_.users_collection is None:
-            self.errorReport = cryNodeReport
-            return None
+        
+        # As we only handle with selected material slot of the active object now,
+        # and export node name is not used any longer, we don't need to check node existence anymore
+        # if self.object_ is None or self.object_.users_collection is None:
+        #     self.errorReport = cryNodeReport
+        #     return None
 
         for group in self.object_.users_collection:
             if utils.is_export_node(group):
@@ -1205,35 +1208,64 @@ class BCRY_OT_add_material_properties(bpy.types.Operator):
         # of materials in it.
         materialCounter = material_utils.get_material_counter()
 
-        for collection in self.object_.users_collection:
-            if utils.is_export_node(collection):
-                for object in collection.objects:
-                    for slot in object.material_slots:
+        # for collection in self.object_.users_collection:
+        #     if utils.is_export_node(collection):
+        #         for object in collection.objects:
+        #             for slot in object.material_slots:
+        #                 # Skip materials that have been renamed already.
+        #                 if not material_utils.is_bcry_material(
+        #                         slot.material.name):
+        #                     materialCounter[collection.name] += 1
+        #                     materialOldName = slot.material.name
 
-                        # Skip materials that have been renamed already.
-                        if not material_utils.is_bcry_material(
-                                slot.material.name):
-                            materialCounter[collection.name] += 1
-                            materialOldName = slot.material.name
+        #                     # Load stored Physics if available for that
+        #                     # material.
+        #                     if physicsProperties.get(slot.material.name):
+        #                         physics = physicsProperties[slot.material.name]
+        #                     else:
+        #                         physics = self.material_phys
 
-                            # Load stored Physics if available for that
-                            # material.
-                            if physicsProperties.get(slot.material.name):
-                                physics = physicsProperties[slot.material.name]
-                            else:
-                                physics = self.material_phys
+        #                     # Rename.
+        #                     slot.material.name = "{}__{:02d}__{}__{}".format(
+        #                         self.material_name,
+        #                         materialCounter[collection.name],
+        #                         utils.replace_invalid_rc_characters(materialOldName),
+        #                         physics)
+        #                     message = "Renamed {} to {}".format(
+        #                         materialOldName,
+        #                         slot.material.name)
+        #                     self.report({'INFO'}, message)
+        #                     bcPrint(message)
+        # return {'FINISHED'}
 
-                            # Rename.
-                            slot.material.name = "{}__{:02d}__{}__{}".format(
-                                self.material_name,
-                                materialCounter[collection.name],
-                                utils.replace_invalid_rc_characters(materialOldName),
-                                physics)
-                            message = "Renamed {} to {}".format(
-                                materialOldName,
-                                slot.material.name)
-                            self.report({'INFO'}, message)
-                            bcPrint(message)
+        # Rename
+        activateMaterial = self.object_.active_material
+        if not material_utils.is_bcry_material(
+            activateMaterial.name):
+            # materialCounter[collection.name] += 1
+            materialOldName = activateMaterial.name
+
+            # Load stored Physics if available for that
+            # material.
+            if physicsProperties.get(activateMaterial.name):
+                physics = physicsProperties[activateMaterial.name]
+            else:
+                physics = self.material_phys
+
+            # Rename.
+            # activateMaterial.name = "{}__{:02d}__{}__{}".format(
+            #     self.material_name,
+            #     materialCounter[collection.name],
+            #     utils.replace_invalid_rc_characters(materialOldName),
+            #     physics)
+            activateMaterial.name = "{}__{}".format(
+                utils.replace_invalid_rc_characters(materialOldName),
+                physics)
+            message = "Renamed {} to {}".format(
+                materialOldName,
+                activateMaterial.name)
+            self.report({'INFO'}, message)
+            bcPrint(message)       
         return {'FINISHED'}
 
     def invoke(self, context, event):
