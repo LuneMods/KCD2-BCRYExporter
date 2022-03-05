@@ -1206,7 +1206,7 @@ class BCRY_OT_add_material_properties(bpy.types.Operator):
 
         # Create a dictionary with all CryExportNodes to store the current number
         # of materials in it.
-        materialCounter = material_utils.get_material_counter()
+        # materialCounter = material_utils.get_material_counter()
 
         # for collection in self.object_.users_collection:
         #     if utils.is_export_node(collection):
@@ -1258,8 +1258,9 @@ class BCRY_OT_add_material_properties(bpy.types.Operator):
             #     materialCounter[collection.name],
             #     utils.replace_invalid_rc_characters(materialOldName),
             #     physics)
+            materialOldName_noProperties = material_utils.remove_bcry_properties(materialOldName)
             activateMaterial.name = "{}__{}".format(
-                utils.replace_invalid_rc_characters(materialOldName),
+                utils.replace_invalid_rc_characters(materialOldName_noProperties if materialOldName_noProperties is not None else materialOldName),
                 physics)
             message = "Renamed {} to {}".format(
                 materialOldName,
@@ -1282,9 +1283,15 @@ class BCRY_OT_discard_material_properties(bpy.types.Operator):
     bl_idname = "bcry.discard_material_properties"
 
     def execute(self, context):
-        material_utils.remove_bcry_properties()
-        message = "Removed BCry Exporter properties from material names"
-        self.report({'INFO'}, message)
+        activateMaterial =  bpy.context.active_object.active_material
+        newName = material_utils.remove_bcry_properties(activateMaterial.name)
+        if newName is not None:
+            activateMaterial.name = newName
+            message = "Removed BCry Exporter properties from material names"
+            self.report({'INFO'}, message)
+        else:
+            message = "Remove properties failed"
+            self.report({'ERROR'}, message)
         bcPrint(message)
         return {'FINISHED'}
 

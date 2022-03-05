@@ -479,15 +479,24 @@ def extract_bcry_properties(material_name):
         properties["Name"] = groups[0][2]
         properties["Physics"] = groups[0][3]
         return properties
+    else:
+        if is_bcry_material_with_phys(material_name):
+            groups = re.findall(
+                "(.*)__(phys[A-Za-z0-9]+)",
+                material_name)
+            properties = {}
+            properties["Name"] = groups[0][0]
+            properties["Physics"] = groups[0][1]
+            return properties
     return None
 
 
-def remove_bcry_properties():
+def remove_bcry_properties(material_name):
     """Removes BCry Exporter properties from all material names."""
-    for material in bpy.data.materials:
-        properties = extract_bcry_properties(material.name)
-        if properties:
-            material.name = properties["Name"]
+    properties = extract_bcry_properties(material_name)
+    if properties:
+        return str(properties["Name"])
+    return None
 
 
 def is_bcry_material(material_name):
@@ -499,6 +508,12 @@ def is_bcry_material(material_name):
 
 def is_bcry_material_with_numbers(material_name):
     if re.search("[0-9]+__.*", material_name):
+        return True
+    else:
+        return False
+
+def is_bcry_material_with_phys(material_name):
+    if re.search(".*__phys[A-Za-z0-9]+", material_name):
         return True
     else:
         return False
