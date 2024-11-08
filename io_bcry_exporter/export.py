@@ -244,16 +244,23 @@ class CrytekDaeExporter:
         use_edge_angle = False
         use_edge_sharp = False
 
-        if object_.data.use_auto_smooth:
-            use_edge_angle = True
-            use_edge_sharp = True
-            split_angle = object_.data.auto_smooth_angle
-        else:
+        has_smooth_by_angle_modfier = False
+        for modifier in object_.modifiers:
+            # It is an "Essential" library geometry node, can't detect type, just use name here
+            if modifier.name == "Smooth by Angle":
+                use_edge_angle = True
+                use_edge_sharp = not modifier["Socket_1"]
+                split_angle = modifier["Input_1"]
+                has_smooth_by_angle_modfier = True
+                break
+        # Only try to find Edge Split modifier if Smooth by Angle is not present
+        if not has_smooth_by_angle_modfier:
             for modifier in object_.modifiers:
                 if modifier.type == 'EDGE_SPLIT' and modifier.show_viewport:
-                    use_edge_angle = modifier.use_edge_angle
-                    use_edge_sharp = modifier.use_edge_sharp
+                    use_edge_angle |= modifier.use_edge_angle
+                    use_edge_sharp |= modifier.use_edge_sharp
                     split_angle = modifier.split_angle
+                    break
 
         float_normals = None
         if self._config.custom_normals:
@@ -458,7 +465,8 @@ class CrytekDaeExporter:
         joints.appendChild(input)
         input = utils.write_input(id_, None, "matrices", "INV_BIND_MATRIX")
         joints.appendChild(input)
-        skin_node.appendChild(joints)
+        skin_node.appendChild(joints)    
+
 
     def _process_bone_joints(self, object_, armature, skin_node, group):
         bones = utils.get_bones(armature)

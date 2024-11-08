@@ -198,24 +198,44 @@ def clear_bmesh(object_, bmesh_):
 
 
 def bcry_split_modifier(object_):
-    if object_.data.use_auto_smooth:
+    has_smooth_by_angle_modfier = False
+    split_angle = 0
+    use_edge_angle = False
+    use_edge_sharp = False
+    for modifier in object_.modifiers:
+        # It is an "Essential" library geometry node, can't detect type, just use name here
+        if modifier.name == "Smooth by Angle":
+            use_edge_angle = True
+            use_edge_sharp = not modifier["Socket_1"]
+            split_angle = modifier["Input_1"]
+            has_smooth_by_angle_modfier = True
+            # Remove smooth by angle modifier
+            object_.modifiers.remove(modifier)
+            break
+    
+    if has_smooth_by_angle_modfier:
         modifier_unique_name = 'BCRY_EDGE_SPLIT'
 
         object_.modifiers.new(modifier_unique_name, 'EDGE_SPLIT')
         edge_split_modifier = object_.modifiers.get(modifier_unique_name)
-        edge_split_modifier.use_edge_angle = True
-        edge_split_modifier.use_edge_sharp = True
-        edge_split_modifier.split_angle = object_.data.auto_smooth_angle
+        edge_split_modifier.use_edge_angle = use_edge_angle
+        edge_split_modifier.use_edge_sharp = use_edge_sharp
+        edge_split_modifier.split_angle = split_angle
 
-        object_.data.use_auto_smooth = False
 
 
 def remove_bcry_split_modifier(object_):
     modifier_unique_name = 'BCRY_EDGE_SPLIT'
-
     edge_split_modifier = object_.modifiers.get(modifier_unique_name)
     if edge_split_modifier:
-        object_.data.use_auto_smooth = True
+        active_object = bpy.context.active_object
+        bpy.context.view_layer.objects.active = object_
+        bpy.ops.object.modifier_add_node_group(asset_library_type='ESSENTIALS', asset_library_identifier="", relative_asset_identifier="geometry_nodes\\smooth_by_angle.blend\\NodeTree\\Smooth by Angle")
+        smooth_by_angle = object_.modifiers["Smooth by Angle"]
+        smooth_by_angle["Input_1"] = edge_split_modifier.split_angle
+        smooth_by_angle["Socket_1"] = not edge_split_modifier.use_edge_sharp
+        bpy.context.view_layer.objects.active = active_object
+
         object_.modifiers.remove(edge_split_modifier)
 
 

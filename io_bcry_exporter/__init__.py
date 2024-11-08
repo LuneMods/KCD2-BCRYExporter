@@ -1524,13 +1524,13 @@ class BCRY_OT_edit_inverse_kinematics(bpy.types.Operator):
         self.is_rotation_lock[1] = self.bone.lock_ik_y
         self.is_rotation_lock[2] = self.bone.lock_ik_z
 
-        self.rotation_min[0] = math.degrees(self.bone.ik_min_x)
-        self.rotation_min[1] = math.degrees(self.bone.ik_min_y)
-        self.rotation_min[2] = math.degrees(self.bone.ik_min_z)
+        self.rotation_min[0] = int(math.degrees(self.bone.ik_min_x))
+        self.rotation_min[1] = int(math.degrees(self.bone.ik_min_y))
+        self.rotation_min[2] = int(math.degrees(self.bone.ik_min_z))
 
-        self.rotation_max[0] = math.degrees(self.bone.ik_max_x)
-        self.rotation_max[1] = math.degrees(self.bone.ik_max_y)
-        self.rotation_max[2] = math.degrees(self.bone.ik_max_z)
+        self.rotation_max[0] = int(math.degrees(self.bone.ik_max_x))
+        self.rotation_max[1] = int(math.degrees(self.bone.ik_max_y))
+        self.rotation_max[2] = int(math.degrees(self.bone.ik_max_z))
 
         try:
             self.bone_spring = self.bone['Spring']
