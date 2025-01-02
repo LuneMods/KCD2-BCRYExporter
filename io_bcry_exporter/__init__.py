@@ -2553,34 +2553,69 @@ class BCRY_OT_add_locator_locomotion(bpy.types.Operator):
         armature.data.collections_all[rootCollectionName].is_visible = True
 
 
+        # Edit locator bone
         locator_bone.parent = armature.data.edit_bones[self.root_bone]
         locator_bone.head.zero()
-        locator_bone.tail.zero()
+        locator_bone.tail = locator_bone.head
         if self.forward_direction == 'y':
-            locator_bone.tail.y = self.bone_length
+            locator_bone.tail.y += self.bone_length
         elif self.forward_direction == '_y':
-            locator_bone.tail.y = -self.bone_length
+            locator_bone.tail.y += -self.bone_length
         elif self.forward_direction == 'x':
-            locator_bone.tail.x = self.bone_length
+            locator_bone.tail.x += self.bone_length
         elif self.forward_direction == '_x':
-            locator_bone.tail.x = -self.bone_length
+            locator_bone.tail.x += -self.bone_length
         elif self.forward_direction == 'z':
-            locator_bone.tail.z = self.bone_length
+            locator_bone.tail.z += self.bone_length
         elif self.forward_direction == '_z':
-            locator_bone.tail.z = -self.bone_length
+            locator_bone.tail.z += -self.bone_length
+
+        movement_bone = armature.data.edit_bones[self.movement_bone]
 
         bpy.ops.object.mode_set(mode='POSE')
         locator_pose_bone = armature.pose.bones['Locator_Locomotion']
         locator_pose_bone.bone.select = True
         armature.data.bones.active = locator_pose_bone.bone
 
+        # Add copy location constrain to track root motion
         locator_pose_bone.constraints.new(type='COPY_LOCATION')
         copy_location = locator_pose_bone.constraints['Copy Location']
+        copy_location.target = armature
+        copy_location.subtarget = self.movement_bone
         copy_location.use_x = self.x_axis
         copy_location.use_y = self.y_axis
         copy_location.use_z = self.z_axis
-        copy_location.target = armature
-        copy_location.subtarget = 'hips'
+        copy_location.use_offset = True
+
+        # Create offset key frame for locator
+        if self.x_axis:
+            locator_pose_bone.location[0] = -1 * movement_bone.head.x
+        if self.y_axis:
+            locator_pose_bone.location[1] = -1 * movement_bone.head.y
+        if self.z_axis:
+            locator_pose_bone.location[2] = -1 * movement_bone.head.z
+        locator_pose_bone.keyframe_insert('location', frame=1)
+
+        # Ensure all bones same inheritance level as movement bone copy locator's location and rotation
+        for child in locator_pose_bone.parent.children:
+            if child.name != locator_pose_bone.name and child.name != self.movement_bone:
+                child.constraints.new(type='COPY_LOCATION')
+                copy_location = child.constraints['Copy Location']
+                copy_location.target = armature
+                copy_location.subtarget = locator_pose_bone.name
+                copy_location.use_x = True
+                copy_location.use_y = True
+                copy_location.use_z = True
+                copy_location.use_offset = True
+
+                child.constraints.new(type='COPY_ROTATION')
+                copy_rotation = child.constraints['Copy Rotation']
+                copy_rotation.target = armature
+                copy_rotation.subtarget = locator_pose_bone.name
+                copy_rotation.use_x = True
+                copy_rotation.use_y = True
+                copy_rotation.use_z = True
+                copy_rotation.mix_mode = 'AFTER'
 
         return {'FINISHED'}
 
